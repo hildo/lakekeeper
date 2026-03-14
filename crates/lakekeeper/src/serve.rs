@@ -10,7 +10,7 @@ use crate::{
     api::{
         ApiContext,
         management::v1::server::{APACHE_LICENSE_STATUS, LicenseStatus},
-        router::{RouterArgs, new_full_router, serve as service_serve},
+        router::{RouterArgs, new_full_router, serve as service_serve, serve_tls},
         shutdown_signal,
     },
     service::{

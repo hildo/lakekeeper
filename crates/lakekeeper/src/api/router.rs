@@ -3,6 +3,7 @@ use std::fmt::Debug;
 use axum::{Json, Router, extract::DefaultBodyLimit, response::IntoResponse, routing::get};
 use axum_extra::{either::Either, middleware::option_layer};
 use axum_prometheus::PrometheusMetricLayer;
+use axum_server::tls_rustls::RustlsConfig;
 use http::{HeaderName, HeaderValue, Method, header};
 use limes::Authenticator;
 use tower::ServiceBuilder;
@@ -396,6 +397,23 @@ pub async fn serve(
         .with_graceful_shutdown(cancellation_future)
         .await
         .map_err(|e| anyhow::anyhow!(e).context("error running HTTP server"))
+}
+
+pub async fn serve_tls(
+    addr: std::net::SocketAddr,
+    tls_config: RustlsConfig,
+    router: Router,
+    cancellation_token: CancellationToken,
+) -> anyhow::Result<()> {
+    let cancellation_future = async move {
+        cancellation_token.cancelled().await;
+        tracing::info!("HTTPS server shutdown requested (cancellation token)");
+    };
+    axum_server::bind_rustls(addr, tls_config)
+        .serve(router.into_make_service())
+        // .with_graceful_shutdown(cancellation_future)
+        .await
+        .map_err(|e| anyhow::anyhow!(e).context("error running HTTPS server"))
 }
 
 #[cfg(test)]

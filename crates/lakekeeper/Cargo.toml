@@ -48,6 +48,7 @@ aws-smithy-runtime-api = { workspace = true }
 axum = { workspace = true }
 axum-extra = { workspace = true, features = ["typed-header"] }
 axum-prometheus = { workspace = true }
+axum-server = { workspace = true }
 azure_core = { workspace = true }
 azure_identity = { workspace = true }
 azure_storage = { workspace = true }
